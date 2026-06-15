@@ -39,6 +39,30 @@ export interface Segment {
   createdAt: string;
 }
 
+export interface CommunicationEvent {
+  id: string;
+  communicationId: string;
+  type: "DELIVERED" | "FAILED" | "OPENED" | "READ" | "CLICKED";
+  timestamp: string;
+}
+
+export interface Communication {
+  id: string;
+  campaignId: string;
+  customerId: string;
+  customer: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+  };
+  channel: "EMAIL" | "SMS" | "WHATSAPP";
+  messageContent: string;
+  status: "PENDING" | "SENT" | "FAILED";
+  createdAt: string;
+  communicationEvents: CommunicationEvent[];
+}
+
 export interface Campaign {
   id: string;
   name: string;
@@ -51,6 +75,7 @@ export interface Campaign {
   _count?: {
     communications: number;
   };
+  communications?: Communication[];
 }
 
 export interface CampaignMetrics {

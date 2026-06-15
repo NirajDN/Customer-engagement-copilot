@@ -13,7 +13,7 @@ services:
     plan: free
     env: node
     buildCommand: "cd backend && npm install && npx prisma generate && npm run build"
-    startCommand: "cd backend && npx prisma db push && npm run prisma:seed && npm start"
+    startCommand: "cd backend && node wait-db.js && npx prisma db push && npm run prisma:seed && npm start"
     envVars:
       - key: PORT
         value: 5005
