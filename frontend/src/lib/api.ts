@@ -1,9 +1,31 @@
 let baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api";
+
+// Remove trailing slash
+baseUrl = baseUrl.replace(/\/$/, "");
+
+// Self-heal Render internal hostname: if the host contains 'xeno-backend-' and lacks a '.',
+// append '.onrender.com' to convert it into the public API endpoint.
+let hostOnly = baseUrl;
+if (hostOnly.startsWith("http://")) hostOnly = hostOnly.substring(7);
+if (hostOnly.startsWith("https://")) hostOnly = hostOnly.substring(8);
+hostOnly = hostOnly.split("/")[0].split(":")[0];
+
+if (hostOnly.startsWith("xeno-backend-") && !hostOnly.includes(".")) {
+  const publicHost = `${hostOnly}.onrender.com`;
+  if (baseUrl.includes("https://")) {
+    baseUrl = baseUrl.replace(hostOnly, publicHost);
+  } else if (baseUrl.includes("http://")) {
+    baseUrl = baseUrl.replace(hostOnly, publicHost).replace("http://", "https://");
+  } else {
+    baseUrl = `https://${publicHost}`;
+  }
+}
+
 if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
   baseUrl = `https://${baseUrl}`;
 }
 if (!baseUrl.endsWith("/api")) {
-  baseUrl = `${baseUrl.replace(/\/$/, "")}/api`;
+  baseUrl = `${baseUrl}/api`;
 }
 const API_BASE_URL = baseUrl;
 
