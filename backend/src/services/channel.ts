@@ -6,7 +6,7 @@ if (!channelUrl.startsWith("http://") && !channelUrl.startsWith("https://")) {
 }
 const CHANNEL_SERVICE_URL = channelUrl;
 
-let crmBackendUrl = process.env.CRM_BACKEND_URL || "http://localhost:5005";
+let crmBackendUrl = process.env.RENDER_EXTERNAL_URL || process.env.CRM_BACKEND_URL || "http://localhost:5005";
 if (!crmBackendUrl.startsWith("http://") && !crmBackendUrl.startsWith("https://")) {
   crmBackendUrl = `https://${crmBackendUrl}`;
 }

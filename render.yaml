@@ -26,11 +26,6 @@ services:
           name: xeno-channel-service
           type: web
           property: host
-      - key: CRM_BACKEND_URL
-        fromService:
-          name: xeno-backend
-          type: web
-          property: host
       - key: GEMINI_API_KEY
         sync: false
         placeholder: "Your Gemini API Key (Optional - falls back to local NLP parser)"
