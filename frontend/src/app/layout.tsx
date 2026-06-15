@@ -15,6 +15,7 @@ import {
   Cpu
 } from "lucide-react";
 import "./globals.css";
+import { fetchCustomers } from "../lib/api";
 
 export default function RootLayout({
   children,
@@ -27,11 +28,8 @@ export default function RootLayout({
 
   // Check CRM service connection on mount
   useEffect(() => {
-    fetch("http://localhost:5005/api/customers")
-      .then((res) => {
-        if (res.ok) setDbStatus("healthy");
-        else setDbStatus("error");
-      })
+    fetchCustomers()
+      .then(() => setDbStatus("healthy"))
       .catch(() => setDbStatus("error"));
   }, []);
 
