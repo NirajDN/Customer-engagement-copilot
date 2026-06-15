@@ -1,4 +1,8 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api";
+let baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api";
+if (!baseUrl.endsWith("/api")) {
+  baseUrl = `${baseUrl.replace(/\/$/, "")}/api`;
+}
+const API_BASE_URL = baseUrl;
 
 export interface CustomerStats {
   id: string;

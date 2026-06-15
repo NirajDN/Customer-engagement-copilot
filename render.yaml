@@ -1,0 +1,66 @@
+services:
+  # 1. PostgreSQL Database Service
+  - type: db
+    name: xeno-db
+    plan: free
+    databaseName: xeno_crm
+    user: postgres
+
+  # 2. CRM Backend Web Service (Express API)
+  - type: web
+    name: xeno-backend
+    plan: free
+    env: node
+    buildCommand: "cd backend && npm install && npx prisma generate && npm run build"
+    startCommand: "cd backend && npx prisma db push && npm run prisma:seed && npm start"
+    envVars:
+      - key: PORT
+        value: 5005
+      - key: DATABASE_URL
+        fromDatabase:
+          name: xeno-db
+          property: connectionString
+      - key: CHANNEL_SERVICE_URL
+        fromService:
+          name: xeno-channel-service
+          type: web
+          property: url
+      - key: CRM_BACKEND_URL
+        fromService:
+          name: xeno-backend
+          type: web
+          property: url
+      - key: GEMINI_API_KEY
+        sync: false
+        placeholder: "Your Gemini API Key (Optional - falls back to local NLP parser)"
+
+  # 3. Channel Service Web Service (Mock Outreach webhook sender)
+  - type: web
+    name: xeno-channel-service
+    plan: free
+    env: node
+    buildCommand: "cd channel-service && npm install && npm run build"
+    startCommand: "cd channel-service && npm start"
+    envVars:
+      - key: PORT
+        value: 4000
+
+  # 4. Next.js Frontend Web Service
+  - type: web
+    name: xeno-frontend
+    plan: free
+    env: node
+    buildCommand: "cd frontend && npm install && npm run build"
+    startCommand: "cd frontend && npm start"
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: xeno-backend
+          type: web
+          property: url
+        # Append /api suffix so next app hits the /api endpoint
+        # Render will supply the host (e.g. https://xeno-backend.onrender.com)
+        # Note: Since NEXT_PUBLIC_ variables are baked at build-time in Next.js, 
+        # Render will supply this correctly when compiling on their build server!
