@@ -20,6 +20,7 @@ import {
 export default function AnalyticsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadAnalytics();
@@ -28,10 +29,12 @@ export default function AnalyticsPage() {
   const loadAnalytics = async () => {
     try {
       setLoading(true);
+      setError(null);
       const analytics = await fetchAnalytics();
       setData(analytics);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load analytics:", err);
+      setError(err.message || "Failed to establish connection to backend API.");
     } finally {
       setLoading(false);
     }
@@ -46,7 +49,20 @@ export default function AnalyticsPage() {
     );
   }
 
-  const { summary, campaigns } = data || { summary: {}, campaigns: [] };
+  const { summary, campaigns } = data || {
+    summary: {
+      totalCampaigns: 0,
+      totalSent: 0,
+      totalDelivered: 0,
+      totalOpened: 0,
+      totalClicked: 0,
+      deliveryRate: 0,
+      openRate: 0,
+      clickRate: 0,
+      conversionRate: 0
+    },
+    campaigns: []
+  };
 
   // Funnel data
   const funnelData = [
@@ -87,36 +103,47 @@ export default function AnalyticsPage() {
         </button>
       </div>
 
+      {error && (
+        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl flex items-start gap-3 text-xs">
+          <Info className="w-4.5 h-4.5 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-bold">Connection Warning:</span>
+            <p className="mt-1 opacity-90">{error}</p>
+            <p className="mt-2 text-[10px] text-slate-400">Please make sure the backend server is running and your <code className="px-1 py-0.5 bg-slate-950/40 rounded text-slate-300">NEXT_PUBLIC_API_URL</code> environment variable matches the backend service URL.</p>
+          </div>
+        </div>
+      )}
+
       {/* Summary Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         
         <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
           <div className="text-[10px] text-slate-500 uppercase font-semibold">Total Campaigns</div>
-          <div className="text-xl font-bold text-slate-200 mt-1">{summary.totalCampaigns}</div>
+          <div className="text-xl font-bold text-slate-200 mt-1">{summary.totalCampaigns ?? 0}</div>
         </div>
 
         <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
           <div className="text-[10px] text-slate-500 uppercase font-semibold">Delivery Rate</div>
           <div className="text-xl font-bold text-violet-400 mt-1">
-            {summary.deliveryRate.toFixed(1)}%
+            {(summary.deliveryRate ?? 0).toFixed(1)}%
           </div>
-          <div className="text-[9px] text-slate-400 mt-1">({summary.totalDelivered} of {summary.totalSent} messages)</div>
+          <div className="text-[9px] text-slate-400 mt-1">({summary.totalDelivered ?? 0} of {summary.totalSent ?? 0} messages)</div>
         </div>
 
         <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
           <div className="text-[10px] text-slate-500 uppercase font-semibold">Open Rate</div>
           <div className="text-xl font-bold text-cyan-400 mt-1">
-            {summary.openRate.toFixed(1)}%
+            {(summary.openRate ?? 0).toFixed(1)}%
           </div>
-          <div className="text-[9px] text-slate-400 mt-1">({summary.totalOpened} of {summary.totalDelivered} read)</div>
+          <div className="text-[9px] text-slate-400 mt-1">({summary.totalOpened ?? 0} of {summary.totalDelivered ?? 0} read)</div>
         </div>
 
         <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
           <div className="text-[10px] text-slate-500 uppercase font-semibold">Conversion Rate</div>
           <div className="text-xl font-bold text-emerald-400 mt-1">
-            {summary.conversionRate.toFixed(1)}%
+            {(summary.conversionRate ?? 0).toFixed(1)}%
           </div>
-          <div className="text-[9px] text-slate-400 mt-1">({summary.totalClicked} click-throughs)</div>
+          <div className="text-[9px] text-slate-400 mt-1">({summary.totalClicked ?? 0} click-throughs)</div>
         </div>
 
       </div>
