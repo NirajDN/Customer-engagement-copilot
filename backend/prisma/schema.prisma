@@ -1,0 +1,75 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Customer {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  phone          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  orders         Order[]
+  communications Communication[]
+}
+
+model Order {
+  id           String   @id @default(uuid())
+  customerId   String
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  amount       Decimal  @db.Decimal(10, 2)
+  status       String   // "COMPLETED", "PENDING", "REFUNDED"
+  purchaseDate DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AudienceSegment {
+  id           String     @id @default(uuid())
+  name         String
+  description  String?
+  filterConfig Json       // Raw JSON filter configuration
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  campaigns    Campaign[]
+}
+
+model Campaign {
+  id              String          @id @default(uuid())
+  name            String
+  segmentId       String
+  segment         AudienceSegment @relation(fields: [segmentId], references: [id])
+  channel         String          // "EMAIL", "SMS", "WHATSAPP"
+  messageTemplate String          // AI-generated message copy template
+  status          String          // "DRAFT", "LAUNCHED", "COMPLETED"
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  communications  Communication[]
+}
+
+model Communication {
+  id                  String               @id @default(uuid())
+  campaignId          String
+  campaign            Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customerId          String
+  customer             Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  channel             String               // "EMAIL", "SMS", "WHATSAPP"
+  messageContent      String               // Personalized message
+  status              String               // "PENDING", "SENT", "FAILED"
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  communicationEvents CommunicationEvent[]
+}
+
+model CommunicationEvent {
+  id              String        @id @default(uuid())
+  communicationId String
+  communication   Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
+  type            String        // "DELIVERED", "FAILED", "OPENED", "READ", "CLICKED"
+  timestamp       DateTime      @default(now())
+}
