@@ -52,7 +52,5 @@ services:
       - key: PORT
         value: 3000
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: xeno-backend
-          type: web
-          property: host
+        sync: false
+        placeholder: "Public URL of xeno-backend (e.g., https://xeno-backend-xxxx.onrender.com)"
