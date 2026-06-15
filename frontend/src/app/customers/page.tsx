@@ -68,7 +68,7 @@ export default function CustomersPage() {
   };
 
   const getSegmentClass = (spend: number, count: number) => {
-    if (spend > 200) {
+    if (spend > 15000) {
       return (
         <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex items-center gap-1 w-fit shadow-[0_0_10px_rgba(99,102,241,0.1)]">
           <Sparkles className="w-2.5 h-2.5" />
@@ -139,7 +139,7 @@ export default function CustomersPage() {
           <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
             <div className="text-[10px] text-slate-500 uppercase font-semibold">VIP Clients</div>
             <div className="text-xl font-bold text-indigo-400 mt-1">
-              {customers.filter(c => c.totalSpend > 200).length}
+              {customers.filter(c => c.totalSpend > 15000).length}
             </div>
           </div>
           <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
@@ -151,7 +151,7 @@ export default function CustomersPage() {
           <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
             <div className="text-[10px] text-slate-500 uppercase font-semibold">Avg. Lifetime Value</div>
             <div className="text-xl font-bold text-emerald-400 mt-1">
-              ${(customers.reduce((sum, c) => sum + c.totalSpend, 0) / (customers.length || 1)).toFixed(2)}
+              ₹{(customers.reduce((sum, c) => sum + c.totalSpend, 0) / (customers.length || 1)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function CustomersPage() {
                       {customer.orderCount}
                     </td>
                     <td className="px-6 py-4 font-mono font-bold text-indigo-400">
-                      ${customer.totalSpend.toFixed(2)}
+                      ₹{customer.totalSpend.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4">
                       {getInactivityBadge(customer.daysSinceLastPurchase)}

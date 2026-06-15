@@ -92,7 +92,7 @@ export default function OrdersPage() {
           <div className="p-4 bg-slate-900/30 border border-white/5 rounded-2xl">
             <div className="text-[10px] text-slate-500 uppercase font-semibold">Total Revenue</div>
             <div className="text-xl font-bold text-indigo-400 mt-1">
-              ${orders.filter(o => o.status === "COMPLETED").reduce((sum, o) => sum + Number(o.amount), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ₹{orders.filter(o => o.status === "COMPLETED").reduce((sum, o) => sum + Number(o.amount), 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
         </div>
@@ -149,7 +149,7 @@ export default function OrdersPage() {
                       })}
                     </td>
                     <td className="px-6 py-4 text-right font-mono font-bold text-indigo-300">
-                      ${Number(order.amount).toFixed(2)}
+                      ₹{Number(order.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                   </tr>
                 ))

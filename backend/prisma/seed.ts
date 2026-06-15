@@ -3,21 +3,21 @@ import { Decimal } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
 
-const firstNames = [
-  "John", "Jane", "Alice", "Bob", "Charlie", "Diana", "Ethan", "Fiona", "George", "Hannah",
-  "Ian", "Julia", "Kevin", "Laura", "Marcus", "Natalie", "Oliver", "Penelope", "Quincy", "Rachel",
-  "Samuel", "Tina", "Victor", "Wendy", "Xavier", "Yasmine", "Zachary", "Liam", "Emma", "Noah",
-  "Olivia", "William", "Ava", "James", "Sophia", "Logan", "Isabella", "Benjamin", "Mia", "Mason"
+const indianFirstNames = [
+  "Amit", "Priya", "Rajesh", "Deepika", "Rohan", "Sneha", "Vikram", "Anjali", "Sanjay", "Pooja",
+  "Rahul", "Neha", "Arjun", "Karan", "Kiran", "Divya", "Sunil", "Aishwarya", "Abhishek", "Shruti",
+  "Varun", "Riya", "Vijay", "Swati", "Suresh", "Aditi", "Manoj", "Jyoti", "Pranav", "Ishita",
+  "Ramesh", "Meera", "Gaurav", "Nisha", "Kartik", "Kriti", "Akash", "Tanya", "Harish", "Preeti"
 ];
 
-const lastNames = [
-  "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
-  "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
-  "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson",
-  "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores"
+const indianLastNames = [
+  "Sharma", "Verma", "Patel", "Singh", "Gupta", "Kumar", "Iyer", "Nair", "Reddy", "Mehta",
+  "Malhotra", "Joshi", "Das", "Choudhury", "Sen", "Rao", "Pillai", "Bose", "Trivedi", "Shah",
+  "Deshmukh", "Kulkarni", "Patil", "Shetty", "Menon", "Kapoor", "Chatterjee", "Banerjee", "Roy", "Nangia",
+  "Sarin", "Mishra", "Pandey", "Dubey", "Saxena", "Sinha", "Prasad", "Naidu", "Gowda", "Bhat"
 ];
 
-const domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com", "protonmail.com"];
+const domains = ["gmail.com", "yahoo.co.in", "outlook.in", "hotmail.com", "rediffmail.com", "proton.me"];
 
 function getRandomElement<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -38,16 +38,21 @@ async function main() {
   await prisma.order.deleteMany();
   await prisma.customer.deleteMany();
 
-  console.log("Seeding customers...");
+  console.log("Seeding Indian customers...");
   const customers = [];
 
-  // Generate 120 unique customers
+  // Generate 120 unique Indian customer profiles
   for (let i = 0; i < 120; i++) {
-    const firstName = getRandomElement(firstNames);
-    const lastName = getRandomElement(lastNames);
+    const firstName = getRandomElement(indianFirstNames);
+    const lastName = getRandomElement(indianLastNames);
     const name = `${firstName} ${lastName}`;
     const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${Math.floor(Math.random() * 1000)}@${getRandomElement(domains)}`;
-    const phone = `+1${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+    
+    // Generate Indian mobile number (starts with 6, 7, 8, or 9)
+    const mobilePrefix = getRandomElement(["6", "7", "8", "9"]);
+    const rest = Math.floor(100000000 + Math.random() * 900000000).toString();
+    const phone = `+91 ${mobilePrefix}${rest.slice(0, 4)} ${rest.slice(4)}`;
+    
     const createdAt = getRandomDateWithinDays(365); // Created in the last year
 
     const customer = await prisma.customer.create({
@@ -61,41 +66,34 @@ async function main() {
     customers.push(customer);
   }
 
-  console.log(`Successfully seeded ${customers.length} customers.`);
+  console.log(`Successfully seeded ${customers.length} Indian customers.`);
 
-  console.log("Seeding orders...");
+  console.log("Seeding transaction orders (in INR ₹)...");
   let orderCount = 0;
 
-  // Let's create varying purchasing behavior
   for (const customer of customers) {
-    // Determine customer buying behavior class:
-    // 1. VIP: 10-20 orders, high amounts
-    // 2. Regular: 3-9 orders, moderate amounts
-    // 3. One-time/Inactive: 1 order, low amount
-    // 4. Lapsed: bought several times in the past, but none in the last 60-90 days
     const behavior = Math.random();
     let numOrders = 1;
-    let minAmt = 15;
-    let maxAmt = 80;
+    let minAmt = 500;   // ₹500
+    let maxAmt = 2500;  // ₹2,500
     let dateLimit = 365; // days ago
 
     if (behavior < 0.15) {
-      // VIP
-      numOrders = Math.floor(10 + Math.random() * 11);
-      minAmt = 80;
-      maxAmt = 500;
+      // VIP buyers: many high value orders
+      numOrders = Math.floor(8 + Math.random() * 12);
+      minAmt = 8000;   // ₹8,000
+      maxAmt = 35000;  // ₹35,000
     } else if (behavior < 0.6) {
-      // Regular
-      numOrders = Math.floor(3 + Math.random() * 7);
-      minAmt = 30;
-      maxAmt = 150;
+      // Regular buyers
+      numOrders = Math.floor(3 + Math.random() * 6);
+      minAmt = 1500;   // ₹1,500
+      maxAmt = 8000;   // ₹8,000
     } else if (behavior < 0.85) {
-      // Lapsed: bought several times in the past, but none recently
+      // Lapsed: purchased in the past but inactive in the last 60 days
       numOrders = Math.floor(2 + Math.random() * 4);
-      minAmt = 20;
-      maxAmt = 100;
-      // We will offset the date to ensure no orders in the last 60 days
-      // Let's make orders between 60 and 365 days ago
+      minAmt = 1000;   // ₹1,000
+      maxAmt = 5000;   // ₹5,000
+      
       for (let j = 0; j < numOrders; j++) {
         const offsetDays = 60 + Math.floor(Math.random() * 300);
         const purchaseDate = new Date();
@@ -114,15 +112,15 @@ async function main() {
         });
         orderCount++;
       }
-      continue; // Skip the regular block for lapsed customers
+      continue; 
     } else {
-      // Inactive/One-time
+      // Inactive/One-time buyers
       numOrders = 1;
-      minAmt = 10;
-      maxAmt = 50;
+      minAmt = 300;    // ₹300
+      maxAmt = 1500;   // ₹1,500
     }
 
-    // Seed orders for non-lapsed customers
+    // Seed orders for active customers
     for (let j = 0; j < numOrders; j++) {
       const purchaseDate = getRandomDateWithinDays(dateLimit);
       const amount = new Decimal((minAmt + Math.random() * (maxAmt - minAmt)).toFixed(2));
@@ -140,7 +138,7 @@ async function main() {
     }
   }
 
-  console.log(`Successfully seeded ${orderCount} orders.`);
+  console.log(`Successfully seeded ${orderCount} orders in Indian Rupees.`);
   console.log("Database seed completed successfully.");
 }
 

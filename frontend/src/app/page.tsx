@@ -236,7 +236,7 @@ export default function DashboardPage() {
   // Quick action prompt configurations
   const quickActions = [
     { title: "Dormant users", desc: "Target customers inactive for 60+ days", prompt: "Re-engage customers who have not purchased in 60 days." },
-    { title: "VIP Loyalty Boost", desc: "Gift promo codes to VIP users (spend > $200)", prompt: "Target VIP customers with lifetime spend > $200 and send them an exclusive code." },
+    { title: "VIP Loyalty Boost", desc: "Gift promo codes to VIP users (spend > ₹15,000)", prompt: "Target VIP customers with lifetime spend > 15000 and send them an exclusive code." },
     { title: "First-Order follow-up", desc: "Follow up with single-order customers via SMS", prompt: "Find customers who have bought only once to send an SMS reminder." }
   ];
 
@@ -303,7 +303,7 @@ export default function DashboardPage() {
               <Users className="w-4 h-4 text-indigo-400" />
             </div>
             <div className="text-2xl font-black text-slate-200 mt-2">
-              ${analytics ? (analytics.summary.totalClicked > 0 ? 82.40 : 79.50) : "0.00"}
+              ₹{analytics ? (analytics.summary.totalClicked > 0 ? "14,820" : "12,450") : "0"}
             </div>
             <span className="text-[9px] text-emerald-400 font-medium mt-1 inline-block">+4.2% LTV growth</span>
           </div>
@@ -674,7 +674,7 @@ export default function DashboardPage() {
                                 <span className="font-semibold text-slate-200">{customer.name}</span>
                                 <span className="text-slate-500 ml-1.5">({customer.email})</span>
                               </div>
-                              <span className="font-semibold text-indigo-400">${customer.totalSpend}</span>
+                              <span className="font-semibold text-indigo-400">₹{customer.totalSpend.toLocaleString('en-IN')}</span>
                             </div>
                           ))}
                           {matchingCustomers.length > 3 && (
