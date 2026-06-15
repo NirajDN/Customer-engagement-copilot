@@ -67,13 +67,13 @@ createdb -h localhost -p 5433 xeno_crm
 1. Open the `/backend` directory.
 2. Edit the `.env` file and input your `GEMINI_API_KEY` (leave empty to use the local smart mock NLP parser):
    ```env
-   PORT=5000
-   DATABASE_URL="postgresql://localhost:5433/xeno_crm?schema=public"
+   PORT=5005
+   DATABASE_URL="postgresql://nirajnillawar@localhost:5433/xeno_crm?schema=public"
    GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
    CHANNEL_SERVICE_URL="http://localhost:4000"
-   CRM_BACKEND_URL="http://localhost:5000"
+   CRM_BACKEND_URL="http://localhost:5005"
    ```
-3. Run migrations and seed data (creates 120 customers and 750+ order records):
+3. Run migrations and seed data (creates 120 customers and 640 order records in Rupees):
    ```bash
    cd backend
    npm install
@@ -100,6 +100,25 @@ npm install
 npm run dev
 ```
 Open **[http://localhost:3000](http://localhost:3000)** in your browser!
+
+---
+
+## 🐳 Docker Compose Deployment (Recommended)
+
+To run the entire ecosystem (including a dedicated PostgreSQL instance, the Express CRM backend, the mock channel pipeline, and the Next.js frontend app) in isolated Docker containers:
+
+1. Ensure **Docker** and **Docker Compose** are installed and running.
+2. Spin up the containers (this will build the Dockerfiles, initialize database schemas, apply seed records, and link services):
+   ```bash
+   docker-compose up --build -d
+   ```
+3. Wait 10-15 seconds for compilation and database hydration to finish.
+4. Access the web app at **[http://localhost:3000](http://localhost:3000)**.
+5. To check container logs or shut down the ecosystem:
+   ```bash
+   docker-compose logs -f
+   docker-compose down -v
+   ```
 
 ---
 
