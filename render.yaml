@@ -1,11 +1,13 @@
-services:
+# Render Blueprint Specification
+
+databases:
   # 1. PostgreSQL Database Service
-  - type: db
-    name: xeno-db
-    plan: free
+  - name: xeno-db
     databaseName: xeno_crm
     user: postgres
+    plan: free
 
+services:
   # 2. CRM Backend Web Service (Express API)
   - type: web
     name: xeno-backend
@@ -60,7 +62,3 @@ services:
           name: xeno-backend
           type: web
           property: url
-        # Append /api suffix so next app hits the /api endpoint
-        # Render will supply the host (e.g. https://xeno-backend.onrender.com)
-        # Note: Since NEXT_PUBLIC_ variables are baked at build-time in Next.js, 
-        # Render will supply this correctly when compiling on their build server!
