@@ -1,4 +1,7 @@
 let baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api";
+if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+  baseUrl = `https://${baseUrl}`;
+}
 if (!baseUrl.endsWith("/api")) {
   baseUrl = `${baseUrl.replace(/\/$/, "")}/api`;
 }

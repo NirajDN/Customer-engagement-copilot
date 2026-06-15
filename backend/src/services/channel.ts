@@ -1,7 +1,16 @@
 import axios from "axios";
 
-const CHANNEL_SERVICE_URL = process.env.CHANNEL_SERVICE_URL || "http://localhost:4000";
-const CRM_BACKEND_URL = process.env.CRM_BACKEND_URL || "http://localhost:5000";
+let channelUrl = process.env.CHANNEL_SERVICE_URL || "http://localhost:4000";
+if (!channelUrl.startsWith("http://") && !channelUrl.startsWith("https://")) {
+  channelUrl = `https://${channelUrl}`;
+}
+const CHANNEL_SERVICE_URL = channelUrl;
+
+let crmBackendUrl = process.env.CRM_BACKEND_URL || "http://localhost:5005";
+if (!crmBackendUrl.startsWith("http://") && !crmBackendUrl.startsWith("https://")) {
+  crmBackendUrl = `https://${crmBackendUrl}`;
+}
+const CRM_BACKEND_URL = crmBackendUrl;
 
 export interface ChannelCommunicationPayload {
   id: string;

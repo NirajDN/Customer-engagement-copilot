@@ -4,7 +4,6 @@ databases:
   # 1. PostgreSQL Database Service
   - name: xeno-db
     databaseName: xeno_crm
-    user: postgres
     plan: free
 
 services:
@@ -26,12 +25,12 @@ services:
         fromService:
           name: xeno-channel-service
           type: web
-          property: url
+          property: host
       - key: CRM_BACKEND_URL
         fromService:
           name: xeno-backend
           type: web
-          property: url
+          property: host
       - key: GEMINI_API_KEY
         sync: false
         placeholder: "Your Gemini API Key (Optional - falls back to local NLP parser)"
@@ -61,4 +60,4 @@ services:
         fromService:
           name: xeno-backend
           type: web
-          property: url
+          property: host
